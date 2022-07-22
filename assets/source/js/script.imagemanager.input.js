@@ -20,7 +20,7 @@ var imageManagerInput = {
 							sModalHtml += '<h4>Image manager</h4>';
 						sModalHtml += '</div>';
 						sModalHtml += '<div class="modal-body">';
-							sModalHtml += '<iframe src="#"></iframe>';
+							sModalHtml += '<iframe id ="iframe-image-manager" src="#"></iframe>';
 						sModalHtml += '</div>';
 					sModalHtml += '</div>';
 				sModalHtml += '</div>';
@@ -42,10 +42,7 @@ var imageManagerInput = {
 		var imageManagerUrl = imageManagerInput.baseUrl+queryStringStartCharacter+"view-mode=iframe&input-id="+inputId+"&aspect-ratio="+aspectRatio+"&crop-view-mode="+cropViewMode+srcImageIdQueryString;
 		//set iframe path
 		$("#modal-imagemanager iframe").attr("src",imageManagerUrl);
-                //set translation title for modal header
-                $("#modal-imagemanager .modal-dialog .modal-header h4").text(imageManagerInput.message.imageManager); 
-		//open modal
-		$("#modal-imagemanager").modal("show");
+        $("#modal-imagemanager .modal-dialog .modal-header h4").text(imageManagerInput.message.imageManager);
 	},
 	//close media manager modal
 	closeModal: function(){
@@ -63,14 +60,14 @@ var imageManagerInput = {
 			if(confirm(imageManagerInput.message.detachWarningMessage) == false){
 				return false;
 			}
-		}		
-		//set input data		
+		}
+		//set input data
 		$('#'+sFieldId).val("");
 		$('#'+sFieldNameId).val("");
 		//trigger change
 		$('#'+sFieldId).trigger("change");
 		//hide image
-		$('#'+sImagePreviewId).attr("src","").parent().addClass("hide");	
+		$('#'+sImagePreviewId).attr("src","").parent().addClass("hide");
 		//delete hide class
 		$(".delete-selected-image[data-input-id='"+inputId+"']").addClass("hide");
 	}
@@ -79,7 +76,7 @@ var imageManagerInput = {
 $(document).ready(function () {
 	//init Image manage
 	imageManagerInput.init();
-	
+
 	//open media manager modal
 	$(document).on("click", ".open-modal-imagemanager", function () {
 		var aspectRatio = $(this).data("aspect-ratio");
@@ -87,12 +84,18 @@ $(document).ready(function () {
 		var inputId = $(this).data("input-id");
 		//open selector id
 		imageManagerInput.openModal(inputId, aspectRatio, cropViewMode);
-	});	
-	
+	});
+
 	//delete picked image
 	$(document).on("click", ".delete-selected-image", function () {
 		var inputId = $(this).data("input-id");
 		//open selector id
 		imageManagerInput.deletePickedImage(inputId);
-	});	
+	});
+
+    document.getElementById("iframe-image-manager").addEventListener("load", function() {
+        if ($("#modal-imagemanager iframe").attr('src') !== '#') {
+            $("#modal-imagemanager").modal("show");
+        }
+    });
 });
