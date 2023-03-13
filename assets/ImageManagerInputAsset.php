@@ -7,7 +7,7 @@ use yii\web\AssetBundle;
  */
 class ImageManagerInputAsset extends AssetBundle
 {
-    public $sourcePath = '@vendor/gillzbv/yii2-image-manager/assets/source';
+    public $sourcePath = '@vendor/pisol/yii2-image-manager/assets/source';
     public $css = [
 		'css/imagemanager.input.css',
     ];

@@ -12,8 +12,7 @@ use yii\behaviors\BlameableBehavior;
  * This is the model class for table "ImageManager".
  *
  * @property integer $id
- * @property string $fileName
- * @property string $fileHash
+ * @property string $title
  * @property string $created
  * @property string $modified
  * @property string $createdBy
@@ -30,8 +29,8 @@ class ImageManager extends \yii\db\ActiveRecord {
 	    // Add the time stamp behavior
         $aBehaviors[] = [
             'class' => TimestampBehavior::className(),
-            'createdAtAttribute' => 'created',
-            'updatedAtAttribute' => 'modified',
+            'createdAtAttribute' => 'ts_created',
+            'updatedAtAttribute' => 'ts_updated',
             'value' => new Expression('NOW()'),
         ];
 
@@ -44,8 +43,8 @@ class ImageManager extends \yii\db\ActiveRecord {
                 // Module has blame able behavior
                 $aBehaviors[] = [
                     'class' => BlameableBehavior::className(),
-                    'createdByAttribute' => 'createdBy',
-                    'updatedByAttribute' => 'modifiedBy',
+                    'createdByAttribute' => 'user_id',
+                    'updatedByAttribute' => 'user_id',
                 ];
             }
         }
@@ -86,10 +85,13 @@ class ImageManager extends \yii\db\ActiveRecord {
 	 */
 	public function rules() {
 		return [
-			[['fileName', 'fileHash'], 'required'],
-			[['created', 'modified'], 'safe'],
-			[['fileName'], 'string', 'max' => 128],
-			[['fileHash'], 'string', 'max' => 32],
+			[['title'], 'required'],
+			[['enabled'], 'boolean'],
+			[['ts_created', 'modified'], 'safe'],
+			[['type'], 'string', 'max' => 50],
+			[['size_file'], 'string', 'max' => 200],
+			[['title', 'title_upload'], 'string', 'max' => 250],
+			[['fileMime', 'path', 'url_path', 'url_path_cache', 'folder_name','cropped_sting'], 'string', 'max' => 100],
 		];
 	}
 
@@ -99,12 +101,10 @@ class ImageManager extends \yii\db\ActiveRecord {
 	public function attributeLabels() {
 		return [
 			'id' => Yii::t('imagemanager', 'ID'),
-			'fileName' => Yii::t('imagemanager', 'File Name'),
-			'fileHash' => Yii::t('imagemanager', 'File Hash'),
-			'created' => Yii::t('imagemanager', 'Created'),
-			'modified' => Yii::t('imagemanager', 'Modified'),
-			'createdBy' => Yii::t('imagemanager', 'Created by'),
-			'modifiedBy' => Yii::t('imagemanager', 'Modified by'),
+			'title' => Yii::t('imagemanager', 'File Name'),
+			'ts_created' => Yii::t('imagemanager', 'Created'),
+			'ts_updated' => Yii::t('imagemanager', 'Modified'),
+			'user_id' => Yii::t('imagemanager', 'Modified by'),
 		];
 	}
 
@@ -127,15 +127,71 @@ class ImageManager extends \yii\db\ActiveRecord {
 		$return = null;
 		//set media path
 		$sMediaPath = \Yii::$app->imagemanager->mediaPath;
-		$sFileExtension = pathinfo($this->fileName, PATHINFO_EXTENSION);
+		$sFileExtension = pathinfo($this->title, PATHINFO_EXTENSION);
 		//get image file path
-		$sImageFilePath = $sMediaPath . '/' . $this->id . '_' . $this->fileHash . '.' . $sFileExtension;
+		$sImageFilePath = $sMediaPath . '/' . $this->id . '.' . $sFileExtension;
 		//check file exists
 		if (file_exists($sImageFilePath)) {
 			$return = $sImageFilePath;
 		}
 		return $return;
 	}
+
+	
+    /**
+	 * Set image paths and info
+	 * @return null 
+	 */
+	public function setImageAttributes($sourcePath) {
+		//set media path
+		$sMediaPath = \Yii::$app->imagemanager->mediaPath;
+		$sFileExtension = pathinfo($this->title, PATHINFO_EXTENSION);
+		//get image file path
+		$this->path = $sMediaPath . '/' . $this->id . '.' . $sFileExtension;
+		$this->url_path =  \Yii::$app->imagemanager->absoluteUrl . '/' . $this->id . '.' . $sFileExtension;
+		$this->fileMime = mime_content_type($this->path);
+		$cacheUrl = "cacheUrl".rand(1, 2);
+		$this->url_path_cache = \Yii::$app->imagemanager->$cacheUrl . '/' . $this->id . '.' . $sFileExtension;
+		$this->type = $sFileExtension;
+		$this->size_file = self::formatSizeUnits(filesize($this->path));
+	}
+	
+    /**
+	 * Set image paths and info
+	 * @return null 
+	 */
+	public function setFolderAttributes() {
+		//set media path
+		$sMediaPath = \Yii::$app->imagemanager->mediaPath;
+		$sFileExtension = pathinfo($this->title, PATHINFO_EXTENSION);
+		//get image file path
+		$this->path = $sMediaPath . '/' . $this->id . '.' . $sFileExtension;
+		$this->url_path =  \Yii::$app->imagemanager->absoluteUrl . '/' . $this->id . '.' . $sFileExtension;
+		$this->fileMime = mime_content_type($this->path);
+		$cacheUrl = "cacheUrl".rand(1, 2);
+		$this->url_path_cache = \Yii::$app->imagemanager->$cacheUrl . '/' . $this->id . '.' . $sFileExtension;
+		$this->type = "FOLDER";
+		$this->size_file = self::formatSizeUnits(filesize($this->path));
+	}
+
+	private static function formatSizeUnits($bytes): string
+    {
+        if ($bytes >= 1073741824) {
+            $bytes = number_format($bytes / 1073741824, 2) . ' GB';
+        } elseif ($bytes >= 1048576) {
+            $bytes = number_format($bytes / 1048576, 2) . ' MB';
+        } elseif ($bytes >= 1024) {
+            $bytes = number_format($bytes / 1024, 2) . ' KB';
+        } elseif ($bytes > 1) {
+            $bytes = $bytes . ' bytes';
+        } elseif ($bytes == 1) {
+            $bytes = $bytes . ' byte';
+        } else {
+            $bytes = '0 bytes';
+        }
+        return $bytes;
+    }
+
 
 	/**
 	 * Get image data dimension/size
@@ -146,9 +202,9 @@ class ImageManager extends \yii\db\ActiveRecord {
 		$return = ['width' => 0, 'height' => 0, 'size' => 0];
 		//set media path
 		$sMediaPath = \Yii::$app->imagemanager->mediaPath;
-		$sFileExtension = pathinfo($this->fileName, PATHINFO_EXTENSION);
+		$sFileExtension = pathinfo($this->title, PATHINFO_EXTENSION);
 		//get image file path
-		$sImageFilePath = $sMediaPath . '/' . $this->id . '_' . $this->fileHash . '.' . $sFileExtension;
+		$sImageFilePath = $sMediaPath . '/' . $this->id . '.' . $sFileExtension;
 		//check file exists
 		if (file_exists($sImageFilePath)) {
 			$aImageDimension = getimagesize($sImageFilePath);

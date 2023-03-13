@@ -106,13 +106,62 @@ class ManagerController extends Controller {
 					'selectType' => $selectType,
 		]);
 	}
+	
+	/**
+	 * Creates a new ImageManager FOLDER model.
+	 * If creation is successful, the browser will be redirected to the 'view' page.
+	 * @return mixed
+	 */
+	public function actionCreateFolder($folderName) {
+        //set response header
+        Yii::$app->getResponse()->format = Response::FORMAT_JSON;
+        // Check if the user is allowed to upload the image
+        if (Yii::$app->controller->module->canUploadImage == false) {
+            // Return the response array to prevent from the action being executed any further
+            return [];
+        }
+        // Create the transaction and set the success variable
+        $transaction = Yii::$app->db->beginTransaction();
+        $bSuccess = false;
+
+		//disable Csrf
+		Yii::$app->controller->enableCsrfValidation = false;
+		//set media path
+		$sMediaPath = \Yii::$app->imagemanager->mediaPath;
+		//create the folder
+		BaseFileHelper::createDirectory($sMediaPath);
+
+		//create a file record
+		$model = new ImageManager();
+		$model->title_upload = $folderName;
+		$model->title = Yii::$app->getSecurity()->generateRandomString(16).".jpg";
+		$model->folder_name = $folderName;
+		//if file is saved add record
+		if ($model->save()) {
+			move_uploaded_file(dirname(__FILE__)."/../assets/source/img/img-folder.jpg", $sMediaPath."/".$model->title);
+			$model->setImageAttributes();
+			$bSuccess = $model->save();
+		}
+
+		if ($bSuccess) {
+		    // The upload action went successful, save the transaction
+		    $transaction->commit();
+		} else {
+		    // There where problems during the upload, kill the transaction
+		    $transaction->rollBack();
+			return false;
+		}
+
+		//echo return json encoded
+		return true;
+	}
 
 	/**
 	 * Creates a new ImageManager model.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 * @return mixed
 	 */
-	public function actionUpload() {
+	public function actionUpload($folderName) {
         //set response header
         Yii::$app->getResponse()->format = Response::FORMAT_JSON;
         // Check if the user is allowed to upload the image
@@ -145,15 +194,16 @@ class ManagerController extends Controller {
 				if ($iErrorCode == 0) { 
 					//create a file record
 					$model = new ImageManager();
-					$model->fileName = str_replace("_", "-", $sFileName);
-					$model->fileHash = Yii::$app->getSecurity()->generateRandomString(32);
+					$model->title_upload = str_replace(" ", "-", $sFileName);
+					$model->title = Yii::$app->getSecurity()->generateRandomString(16).".".$sFileExtension;
+					$model->folder_name = $folderName;
 					//if file is saved add record
 					if ($model->save()) {
-						//move file to dir
-						$sSaveFileName = $model->id . "_" . $model->fileHash . "." . $sFileExtension;
-						//move_uploaded_file($sTempFile, $sMediaPath."/".$sFileName);
 						//save with Imagine class
-						Image::getImagine()->open($sTempFile)->save($sMediaPath . "/" . $sSaveFileName);
+						Image::getImagine()->open($sTempFile)->save($sMediaPath . "/" . $model->title);
+						
+						$model->setImageAttributes();
+						$model->save();
 						$bSuccess = true;
 					}
 				}
@@ -196,7 +246,7 @@ class ManagerController extends Controller {
 			$iDimensionWidth = round($aCropData['width']);
 			$iDimensionHeight = round($aCropData['height']);
 			//collect variables
-			$sFileNameReplace = preg_replace("/_crop_\d+x\d+/", "", $modelOriginal->fileName);
+			$sFileNameReplace = preg_replace("/_crop_\d+x\d+/", "", $modelOriginal->title);
 			$sFileName = pathinfo($sFileNameReplace, PATHINFO_FILENAME);
 			$sFileExtension = pathinfo($sFileNameReplace, PATHINFO_EXTENSION);
 			$sDisplayFileName = $sFileName . "_crop_" . $iDimensionWidth . "x" . $iDimensionHeight . "." . $sFileExtension;
@@ -207,16 +257,14 @@ class ManagerController extends Controller {
             
 			//create a file record
 			$model = new ImageManager();
-			$model->fileName = $sDisplayFileName;
-			$model->fileHash = Yii::$app->getSecurity()->generateRandomString(32);
+			$model->title_upload = $sDisplayFileName;
+			$model->title = Yii::$app->getSecurity()->generateRandomString(16).".".$sFileExtension;
+			$model->folder_name = $modelOriginal->folder_name;
 			//if file is saved add record
 			if ($model->save()) {
                 
                 //do crop in try catch
                 try {
-                    // create file name
-                    $sSaveFileName = $model->id . "_" . $model->fileHash . "." . $sFileExtension;
-                    
                     // get current/original image data
                     $imageOriginal = Image::getImagine()->open($modelOriginal->imagePathPrivate);
                     $imageOriginalSize = $imageOriginal->getSize();
@@ -299,10 +347,13 @@ class ManagerController extends Controller {
                     Image::getImagine()->create(new Box($imageCanvasWidthRounded, $imageCanvasHeightRounded), $imagineColor)
                                 ->paste($imageOriginal, new Point($imageOriginalPositionXRounded, $imageOriginalPositionYRounded))
                                 ->crop(new Point($imageCropPositionXRounded, $imageCropPositionYRounded), new Box($imageCropWidthRounded, $imageCropHeightRounded))
-                                ->save($sMediaPath . "/" . $sSaveFileName);
+                                ->save($sMediaPath . "/" . $model->title);
                     
                     //set boolean crop success to true
                     $bCropSuccess = true;
+
+					$model->setImageAttributes();
+					$model->save();
                     
                     //set return id
                     $return = $model->id;
@@ -343,7 +394,7 @@ class ManagerController extends Controller {
 		$model = $this->findModel($ImageManager_id);
 		//set return details
 		$return['id'] = $model->id;
-		$return['fileName'] = $model->fileName;
+		$return['fileName'] = $model->title;
 		$return['created'] = Yii::$app->formatter->asDate($model->created);
 		$return['fileSize'] = $model->imageDetails['size'];
 		$return['dimensionWidth'] = $model->imageDetails['width'];

@@ -31,6 +31,13 @@ class ImageManagerGetPath extends Component {
 	 */
 	public $absoluteUrl = false;
 
+	
+	/**
+	 * @var boolean $useFilename use original filename in generated cache file
+	 */
+	public $cacheUrl1 = false;
+	public $cacheUrl2 = false;
+
     /**
      * @var string The DB component name that the image model uses
      * This defaults to the default Yii DB component: Yii::$app->db
@@ -89,7 +96,7 @@ class ImageManagerGetPath extends Component {
 
 			$sFileExtension = pathinfo($mImageManager->fileName, PATHINFO_EXTENSION);
 			//get image file path
-			$sImageFilePath = $sMediaPath . '/' . $mImageManager->id . '_' . $mImageManager->fileHash . '.' . $sFileExtension;
+			$sImageFilePath = $sMediaPath . '/' . $mImageManager->id . '.' . $sFileExtension;
 			//check file exists
 			if (file_exists($sImageFilePath)) {
 				$return = \Yii::$app->imageresize->getUrl($sImageFilePath, $width, $height, $thumbnailMode, null, $mImageManager->fileName);
