@@ -1,5 +1,5 @@
 <?php
-namespace noam148\imagemanager\assets;
+namespace pisol\imagemanager\assets;
 use yii\web\AssetBundle;
 
 /**
@@ -18,6 +18,6 @@ class ImageManagerModuleAsset extends AssetBundle
     ];
     public $depends = [
 		'yii\web\JqueryAsset',
-        'yii\bootstrap\BootstrapPluginAsset',
+        'yii\bootstrap4\BootstrapPluginAsset',
     ];
 }

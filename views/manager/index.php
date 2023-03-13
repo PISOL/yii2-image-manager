@@ -45,6 +45,7 @@ $this->title = Yii::t('imagemanager','Image manager');
 				'itemView' => function ($model, $key, $index, $widget) {
 					return $this->render("_item", ['model' => $model]);
 				},
+				'pager' => ['class' => yii\bootstrap4\LinkPager::class]
 			]) ?>
 			<?php Pjax::end(); ?>
 		</div>
@@ -52,7 +53,7 @@ $this->title = Yii::t('imagemanager','Image manager');
 			<div class="form-group">
 				<?=Html::textInput('input-mediamanager-search', null, ['id'=>'input-mediamanager-search', 'class'=>'form-control', 'placeholder'=>Yii::t('imagemanager','Search').'...'])?>
 			</div>
-
+			<hr />
 			<?php
 				if (Yii::$app->controller->module->canUploadImage):
 			?>
@@ -60,6 +61,7 @@ $this->title = Yii::t('imagemanager','Image manager');
 			<?=FileInput::widget([
 				'name' => 'imagemanagerFiles[]',
 				'id' => 'imagemanager-files',
+				'bsVersion' => '4.x',
 				'options' => [
 					'multiple' => true,
 					'accept' => 'image/*'
@@ -77,11 +79,11 @@ $this->title = Yii::t('imagemanager','Image manager');
 					'browseLabel' => Yii::t('imagemanager','Upload')
 				],
 				'pluginEvents' => [
-					"filebatchselected" => "function(event, files){  $('.msg-invalid-file-extension').addClass('hide'); $(this).fileinput('upload'); }",
+					"filebatchselected" => "function(event, files){  $('.msg-invalid-file-extension').addClass('d-none'); $(this).fileinput('upload'); }",
 					"filebatchuploadsuccess" => "function(event, data, previewId, index) {
 						imageManagerModule.uploadSuccess(data.jqXHR.responseJSON.imagemanagerFiles);
 					}",
-					"fileuploaderror" => "function(event, data) { $('.msg-invalid-file-extension').removeClass('hide'); }",
+					"fileuploaderror" => "function(event, data) { $('.msg-invalid-file-extension').removeClass('d-none'); }",
 				],
 			]) ?>
 
@@ -89,7 +91,7 @@ $this->title = Yii::t('imagemanager','Image manager');
 				endif;
 			?>
 
-			<div class="image-info hide">
+			<div class="image-info d-none">
 				<div class="thumbnail">
 					<img src="#">
 				</div>

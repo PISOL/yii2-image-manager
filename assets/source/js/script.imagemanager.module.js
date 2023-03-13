@@ -35,6 +35,13 @@ var imageManagerModule = {
 		//set pjax
 		$.pjax({url: newUrl, container: "#pjax-mediamanager", push: false, replace: false, timeout: 5000, scrollTo:false});
 	},	
+	//select a folder
+	selectFolder: function(folderName){
+		//set new url
+		var newUrl = window.queryStringParameter.set(window.location.href, "ImageManagerSearch[folder_name]", folderName);
+		//set pjax
+		$.pjax({url: newUrl, container: "#pjax-mediamanager", push: false, replace: false, timeout: 5000, scrollTo:false});
+	},	
 	//select an image
 	selectImage: function(id){
 		//set selected class
@@ -56,11 +63,11 @@ var imageManagerModule = {
 				//set input data		
 				$('#'+sFieldId, window.parent.document).val(imageManagerModule.selectedImage.id);
 				$('#'+sFieldNameId, window.parent.document).val(imageManagerModule.selectedImage.fileName);
-				$('#'+sFieldImageId, window.parent.document).attr("src",imageManagerModule.selectedImage.image).parent().removeClass("hide");
+				$('#'+sFieldImageId, window.parent.document).attr("src",imageManagerModule.selectedImage.image).parent().removeClass("d-none");
 				//trigger change
 				parent.$('#'+sFieldId).trigger('change');
 				//show delete button
-				$(".delete-selected-image[data-input-id='"+sFieldId+"']", window.parent.document).removeClass("hide");
+				$(".delete-selected-image[data-input-id='"+sFieldId+"']", window.parent.document).removeClass("d-none");
 				//close the modal
 				window.parent.imageManagerInput.closeModal();
 				break;
@@ -126,8 +133,8 @@ var imageManagerModule = {
 						if(responseData.delete === true){
 							//delete item element
 							$("#module-imagemanager .item-overview .item[data-key='"+imageManagerModule.selectedImage.id+"']").remove(); 
-							//add hide class to info block
-							$("#module-imagemanager .image-info").addClass("hide");
+							//add d-none class to info block
+							$("#module-imagemanager .image-info").addClass("d-none");
 							//set selectedImage to null
 							imageManagerModule.selectedImage = null;
 							//close edit
@@ -173,8 +180,8 @@ var imageManagerModule = {
 					$("#module-imagemanager .image-info .dimensions .dimension-width").text(responseData.dimensionWidth);
 					$("#module-imagemanager .image-info .dimensions .dimension-height").text(responseData.dimensionHeight);
 					$("#module-imagemanager .image-info .thumbnail").html("<img src='"+responseData.image+"' alt='"+responseData.fileName+"'/>");
-					//remove hide class
-					$("#module-imagemanager .image-info").removeClass("hide");
+					//remove d-none class
+					$("#module-imagemanager .image-info").removeClass("d-none");
 				}
 			},
 			error: function (jqXHR, textStatus, errorThrown) {
@@ -217,7 +224,7 @@ var imageManagerModule = {
 					},
 					dataType: "json",
 					success: function (responseData, textStatus, jqXHR) {
-						//hide cropper
+						//d-none cropper
 						$("#module-imagemanager > .row .col-image-cropper").css("visibility","hidden");
 						//set image in cropper
 						$('#module-imagemanager > .row .col-image-editor .image-cropper .image-wrapper img#image-cropper').one('built.cropper', function () {
@@ -289,10 +296,15 @@ $(document).ready(function () {
 	imageManagerModule.init();	
 	//on click select item (open view)
 	$(document).on("click", "#module-imagemanager .item-overview .item", function (){
-		//get id
-		var ImageManager_id = $(this).data("key");
-		//select image
-		imageManagerModule.selectImage(ImageManager_id);
+		if($(this).find(".folder").length > 0){
+			//select folder
+			imageManagerModule.selectFolder($(this).find(".folder").data("folder_name"));
+		}else{
+			//get id
+			var ImageManager_id = $(this).data("key");
+			//select image
+			imageManagerModule.selectImage(ImageManager_id);
+		}
 	});
 	//on click pick image
 	$(document).on("click", "#module-imagemanager .image-info .pick-image-item", function (){

@@ -13,11 +13,11 @@ var imageManagerInput = {
 		if($("#modal-imagemanager").length === 0){
 			//set html modal in var
 			var sModalHtml = '<div tabindex="-1" role="dialog" class="fade modal" id="modal-imagemanager">';
-				sModalHtml += '<div class="modal-dialog modal-lg">';
+				sModalHtml += '<div class="modal-dialog modal-xl">';
 					sModalHtml += '<div class="modal-content">';
 						sModalHtml += '<div class="modal-header">';
-							sModalHtml += '<button aria-hidden="true" data-dismiss="modal" class="close" type="button">&times;</button>';
-							sModalHtml += '<h4>Image manager</h4>';
+						sModalHtml += '<h5 class="modal-title">Image manager</h5>';
+						sModalHtml += '<button aria-hidden="true" data-dismiss="modal" class="close" type="button">&times;</button>';
 						sModalHtml += '</div>';
 						sModalHtml += '<div class="modal-body">';
 							sModalHtml += '<iframe id ="iframe-image-manager" src="#"></iframe>';
@@ -42,7 +42,7 @@ var imageManagerInput = {
 		var imageManagerUrl = imageManagerInput.baseUrl+queryStringStartCharacter+"view-mode=iframe&input-id="+inputId+"&aspect-ratio="+aspectRatio+"&crop-view-mode="+cropViewMode+srcImageIdQueryString;
 		//set iframe path
 		$("#modal-imagemanager iframe").attr("src",imageManagerUrl);
-        $("#modal-imagemanager .modal-dialog .modal-header h4").text(imageManagerInput.message.imageManager);
+        $("#modal-imagemanager .modal-dialog .modal-header h5").text(imageManagerInput.message.imageManager);
 	},
 	//close media manager modal
 	closeModal: function(){
@@ -66,10 +66,10 @@ var imageManagerInput = {
 		$('#'+sFieldNameId).val("");
 		//trigger change
 		$('#'+sFieldId).trigger("change");
-		//hide image
-		$('#'+sImagePreviewId).attr("src","").parent().addClass("hide");
-		//delete hide class
-		$(".delete-selected-image[data-input-id='"+inputId+"']").addClass("hide");
+		//d-none image
+		$('#'+sImagePreviewId).attr("src","").parent().addClass("d-none");
+		//delete d-none class
+		$(".delete-selected-image[data-input-id='"+inputId+"']").addClass("d-none");
 	}
 };
 

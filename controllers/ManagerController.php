@@ -1,11 +1,11 @@
 <?php
 
-namespace noam148\imagemanager\controllers;
+namespace pisol\imagemanager\controllers;
 
 use Yii;
-use noam148\imagemanager\models\ImageManager;
-use noam148\imagemanager\models\ImageManagerSearch;
-use noam148\imagemanager\assets\ImageManagerModuleAsset;
+use pisol\imagemanager\models\ImageManager;
+use pisol\imagemanager\models\ImageManagerSearch;
+use pisol\imagemanager\assets\ImageManagerModuleAsset;
 use yii\web\Response;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -18,7 +18,7 @@ use yii\imagine\Image;
 use Imagine\Image\Box;
 use Imagine\Image\Palette\RGB;
 use Imagine\Image\Point;
-use noam148\imagemanager\Module;
+use pisol\imagemanager\Module;
 
 /**
  * Manager controller for the `imagemanager` module
@@ -76,7 +76,7 @@ class ManagerController extends Controller {
 				//if exists loop through files and add them to iframe mode
 				foreach ($aCssFiles AS $cssFile) {
 					//registrate file
-					$this->view->registerCssFile($cssFile, ['depends' => 'yii\bootstrap\BootstrapAsset']);
+					$this->view->registerCssFile($cssFile, ['depends' => 'yii\bootstrap4\BootstrapAsset']);
 				}
 			}
 		}
@@ -96,7 +96,7 @@ class ManagerController extends Controller {
 
 		$searchModel = new ImageManagerSearch();
 		$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
+		
 		//render template
 		return $this->render(
 						'index', [
@@ -161,7 +161,7 @@ class ManagerController extends Controller {
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 * @return mixed
 	 */
-	public function actionUpload($folderName) {
+	public function actionUpload($folderName = null) {
         //set response header
         Yii::$app->getResponse()->format = Response::FORMAT_JSON;
         // Check if the user is allowed to upload the image
@@ -241,7 +241,7 @@ class ManagerController extends Controller {
 		//get details
 		$modelOriginal = $this->findModel($ImageManager_id);
 		//check if path is not null
-		if ($modelOriginal->imagePathPrivate !== null && $aCropData !== null) {
+		if ($modelOriginal->path !== null && $aCropData !== null) {
 			//dimension
 			$iDimensionWidth = round($aCropData['width']);
 			$iDimensionHeight = round($aCropData['height']);
@@ -266,7 +266,7 @@ class ManagerController extends Controller {
                 //do crop in try catch
                 try {
                     // get current/original image data
-                    $imageOriginal = Image::getImagine()->open($modelOriginal->imagePathPrivate);
+                    $imageOriginal = Image::getImagine()->open($modelOriginal->path);
                     $imageOriginalSize = $imageOriginal->getSize();
                     $imageOriginalWidth = $imageOriginalSize->getWidth();
                     $imageOriginalHeight = $imageOriginalSize->getHeight();
@@ -394,8 +394,8 @@ class ManagerController extends Controller {
 		$model = $this->findModel($ImageManager_id);
 		//set return details
 		$return['id'] = $model->id;
-		$return['fileName'] = $model->title;
-		$return['created'] = Yii::$app->formatter->asDate($model->created);
+		$return['fileName'] = $model->title_upload;
+		$return['created'] = Yii::$app->formatter->asDate($model->ts_created);
 		$return['fileSize'] = $model->imageDetails['size'];
 		$return['dimensionWidth'] = $model->imageDetails['width'];
 		$return['dimensionHeight'] = $model->imageDetails['height'];

@@ -1,12 +1,11 @@
 <?php
 
-namespace noam148\imagemanager;
+namespace pisol\imagemanager;
 
 use Yii;
 use yii\base\UnknownClassException;
 use yii\base\InvalidConfigException;
 use yii\web\AssetManager;
-use noam148\imagemanager\assets\ImageManagerModuleAsset;
 
 /**
  * imagemanager module definition class
@@ -57,7 +56,7 @@ class Module extends \yii\base\Module {
 			Yii::$app->i18n->translations['imagemanager'] = [
 				'class' => 'yii\i18n\PhpMessageSource',
 				'sourceLanguage' => 'en',
-				'basePath' => '@noam148/imagemanager/messages'
+				'basePath' => '@pisol/imagemanager/messages'
 			];
 		}
 		//check extensions

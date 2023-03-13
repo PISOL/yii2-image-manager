@@ -1,14 +1,14 @@
 <?php
 
-namespace noam148\imagemanager\components;
+namespace pisol\imagemanager\components;
 
 use Yii;
 use yii\widgets\InputWidget;
 use yii\helpers\Html;
 use yii\helpers\Json;
 use yii\helpers\Url;
-use noam148\imagemanager\models\ImageManager;
-use noam148\imagemanager\assets\ImageManagerInputAsset;
+use pisol\imagemanager\models\ImageManager;
+use pisol\imagemanager\assets\ImageManagerInputAsset;
 
 class ImageManagerInputWidget extends InputWidget {
 
@@ -42,7 +42,7 @@ class ImageManagerInputWidget extends InputWidget {
             Yii::$app->i18n->translations['imagemanager'] = [
                 'class' => 'yii\i18n\PhpMessageSource',
                 'sourceLanguage' => 'en',
-                'basePath' => '@noam148/imagemanager/messages'
+                'basePath' => '@pisol/imagemanager/messages'
             ];
         }
     }
@@ -70,7 +70,7 @@ class ImageManagerInputWidget extends InputWidget {
             $ImageManager_fileName = null;
             $mImageManager = ImageManager::findOne($ImageManager_id);
             if ($mImageManager !== null) {
-                $ImageManager_fileName = $mImageManager->fileName;
+                $ImageManager_fileName = $mImageManager->title_upload;
             }
             //create field
             $field .= Html::textInput($this->attribute, $ImageManager_fileName, ['class' => 'form-control', 'id' => $sFieldNameId, 'readonly' => true]);
@@ -81,10 +81,11 @@ class ImageManagerInputWidget extends InputWidget {
         }
         //end input group
         $sHideClass = $ImageManager_id === null ? 'hide' : '';
-        $field .= "<a href='#' class='input-group-addon btn btn-primary delete-selected-image " . $sHideClass . "' data-input-id='" . $sFieldId . "' data-show-delete-confirm='" . ($this->showDeletePickedImageConfirm ? "true" : "false") . "'><i class='glyphicon glyphicon-remove' aria-hidden='true'></i></a>";
+        $field .= "<div class='input-group-append'>";
+        $field .= "<a href='#' class='input-group-addon btn btn-primary delete-selected-image " . $sHideClass . "' data-input-id='" . $sFieldId . "' data-show-delete-confirm='" . ($this->showDeletePickedImageConfirm ? "true" : "false") . "'><i class='far fa-trash-alt'></i></a>";
         $field .= "<a href='#' class='input-group-addon btn btn-primary open-modal-imagemanager' data-aspect-ratio='" . $this->aspectRatio . "' data-crop-view-mode='" . $this->cropViewMode . "' data-input-id='" . $sFieldId . "'>";
-        $field .= "<i class='glyphicon glyphicon-folder-open' aria-hidden='true'></i>";
-        $field .= "</a></div>";
+        $field .= "<i class='far fa-folder-open'></i>";
+        $field .= "</a></div></div>";
 
         //show preview if is true
         if ($this->showPreview == true) {

@@ -1,10 +1,10 @@
 <?php
 
-namespace noam148\imagemanager\components;
+namespace pisol\imagemanager\components;
 
 use Yii;
 use yii\base\Component;
-use noam148\imagemanager\models\ImageManager;
+use pisol\imagemanager\models\ImageManager;
 use yii\base\InvalidConfigException;
 use yii\db\Connection;
 
@@ -31,9 +31,15 @@ class ImageManagerGetPath extends Component {
 	 */
 	public $absoluteUrl = false;
 
+		
+	/**
+	 * @var string $publicUrl url
+	 */
+	public $publicUrl = null;
+
 	
 	/**
-	 * @var boolean $useFilename use original filename in generated cache file
+	 * @var string $cache url
 	 */
 	public $cacheUrl1 = false;
 	public $cacheUrl2 = false;
@@ -55,6 +61,10 @@ class ImageManagerGetPath extends Component {
         if(!is_array($this->cachePath)){
             $this->cachePath = [$this->cachePath];
         }
+
+		if(!$this->publicUrl){
+			$this->publicUrl = \Yii\helpers\Url::base('https');
+		}
 
 		// Initialize the compontent with the configuration loaded from config.php
 		\Yii::$app->set('imageresize', [
@@ -93,13 +103,11 @@ class ImageManagerGetPath extends Component {
 			if ($this->mediaPath !== null) {
 				$sMediaPath = $this->mediaPath;
 			}
-
-			$sFileExtension = pathinfo($mImageManager->fileName, PATHINFO_EXTENSION);
 			//get image file path
-			$sImageFilePath = $sMediaPath . '/' . $mImageManager->id . '.' . $sFileExtension;
+			$sImageFilePath = $sMediaPath . '/' . $mImageManager->title;
 			//check file exists
 			if (file_exists($sImageFilePath)) {
-				$return = \Yii::$app->imageresize->getUrl($sImageFilePath, $width, $height, $thumbnailMode, null, $mImageManager->fileName);
+				$return = \Yii::$app->imageresize->getUrl($sImageFilePath, $width, $height, $thumbnailMode, null, $mImageManager->title_upload);
 			} else {
 				$return = null; //isset(\Yii::$app->controller->module->assetPublishedUrl) ? \Yii::$app->controller->module->assetPublishedUrl. "/img/img_no-image.png" : null;
 			}

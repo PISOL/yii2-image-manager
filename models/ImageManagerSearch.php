@@ -1,12 +1,12 @@
 <?php
 
-namespace noam148\imagemanager\models;
+namespace pisol\imagemanager\models;
 
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use noam148\imagemanager\models\ImageManager;
-use noam148\imagemanager\Module;
+use pisol\imagemanager\models\ImageManager;
+use pisol\imagemanager\Module;
 
 /**
  * ImageManagerSearch represents the model behind the search form about `common\modules\imagemanager\models\ImageManager`.
@@ -14,6 +14,7 @@ use noam148\imagemanager\Module;
 class ImageManagerSearch extends ImageManager
 {
 	public $globalSearch;
+    public $folder_name;
 	
     /**
      * @inheritdoc
@@ -21,7 +22,7 @@ class ImageManagerSearch extends ImageManager
     public function rules()
     {
         return [
-            [['globalSearch'], 'safe'],
+            [['globalSearch', 'folder_name'], 'safe'],
         ];
     }
 
@@ -52,7 +53,7 @@ class ImageManagerSearch extends ImageManager
 			'pagination' => [
 				'pagesize' => 100,
 			],
-			'sort'=> ['defaultOrder' => ['created'=>SORT_DESC]]
+			'sort'=> ['defaultOrder' => ['ts_created'=>SORT_DESC]]
         ]);
 
         $this->load($params);
@@ -66,13 +67,17 @@ class ImageManagerSearch extends ImageManager
         // Get the module instance
         $module = Module::getInstance();
 
+        $query->andWhere(['NOT IN', 'type', ['xls', 'xlsx']]);
+
         if ($module->setBlameableBehavior) {
-            $query->andWhere(['createdBy' => Yii::$app->user->id]);
+            $query->andWhere(['user_id' => Yii::$app->user->id]);
+        }
+        if($this->folder_name){
+            $query->andWhere(['folder_name' => $this->folder_name]);
+            $query->andWhere(['<>', 'type', 'FOLDER']);
         }
 
-        $query->orFilterWhere(['like', 'fileName', $this->globalSearch])
-            ->orFilterWhere(['like', 'created', $this->globalSearch])
-			->orFilterWhere(['like', 'modified', $this->globalSearch]);
+        $query->orFilterWhere(['like', 'title_upload', $this->globalSearch]);
 
         return $dataProvider;
     }

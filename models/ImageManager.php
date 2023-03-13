@@ -1,8 +1,7 @@
 <?php
 
-namespace noam148\imagemanager\models;
+namespace pisol\imagemanager\models;
 
-use noam148\imagemanager\Module;
 use Yii;
 use yii\db\Expression;
 use yii\behaviors\TimestampBehavior;
@@ -56,7 +55,7 @@ class ImageManager extends \yii\db\ActiveRecord {
 	 * @inheritdoc
 	 */
 	public static function tableName() {
-		return '{{%ImageManager}}';
+		return '{{%files}}';
 	}
 
     /**
@@ -113,8 +112,8 @@ class ImageManager extends \yii\db\ActiveRecord {
         parent::afterDelete();
 
         // Check if file exists
-        if (file_exists($this->getImagePathPrivate())) {
-            unlink($this->getImagePathPrivate());
+        if (file_exists($this->path)) {
+            unlink($this->path);
         }
     }
 
@@ -142,16 +141,16 @@ class ImageManager extends \yii\db\ActiveRecord {
 	 * Set image paths and info
 	 * @return null 
 	 */
-	public function setImageAttributes($sourcePath) {
+	public function setImageAttributes() {
 		//set media path
 		$sMediaPath = \Yii::$app->imagemanager->mediaPath;
 		$sFileExtension = pathinfo($this->title, PATHINFO_EXTENSION);
 		//get image file path
-		$this->path = $sMediaPath . '/' . $this->id . '.' . $sFileExtension;
-		$this->url_path =  \Yii::$app->imagemanager->absoluteUrl . '/' . $this->id . '.' . $sFileExtension;
+		$this->path = $sMediaPath . '/' . $this->title;
+		$this->url_path =  \Yii::$app->imagemanager->publicUrl . '/' . $this->title;
 		$this->fileMime = mime_content_type($this->path);
 		$cacheUrl = "cacheUrl".rand(1, 2);
-		$this->url_path_cache = \Yii::$app->imagemanager->$cacheUrl . '/' . $this->id . '.' . $sFileExtension;
+		$this->url_path_cache = \Yii::$app->imagemanager->$cacheUrl . '/' . $this->title;
 		$this->type = $sFileExtension;
 		$this->size_file = self::formatSizeUnits(filesize($this->path));
 	}
@@ -163,13 +162,12 @@ class ImageManager extends \yii\db\ActiveRecord {
 	public function setFolderAttributes() {
 		//set media path
 		$sMediaPath = \Yii::$app->imagemanager->mediaPath;
-		$sFileExtension = pathinfo($this->title, PATHINFO_EXTENSION);
 		//get image file path
-		$this->path = $sMediaPath . '/' . $this->id . '.' . $sFileExtension;
-		$this->url_path =  \Yii::$app->imagemanager->absoluteUrl . '/' . $this->id . '.' . $sFileExtension;
+		$this->path = $sMediaPath . '/' . $this->title;
+		$this->url_path =  \Yii::$app->imagemanager->publicUrl . '/' . $this->title;
 		$this->fileMime = mime_content_type($this->path);
 		$cacheUrl = "cacheUrl".rand(1, 2);
-		$this->url_path_cache = \Yii::$app->imagemanager->$cacheUrl . '/' . $this->id . '.' . $sFileExtension;
+		$this->url_path_cache = \Yii::$app->imagemanager->$cacheUrl . '/' . $this->title;
 		$this->type = "FOLDER";
 		$this->size_file = self::formatSizeUnits(filesize($this->path));
 	}
@@ -202,9 +200,8 @@ class ImageManager extends \yii\db\ActiveRecord {
 		$return = ['width' => 0, 'height' => 0, 'size' => 0];
 		//set media path
 		$sMediaPath = \Yii::$app->imagemanager->mediaPath;
-		$sFileExtension = pathinfo($this->title, PATHINFO_EXTENSION);
 		//get image file path
-		$sImageFilePath = $sMediaPath . '/' . $this->id . '.' . $sFileExtension;
+		$sImageFilePath = $sMediaPath . '/' . $this->title;
 		//check file exists
 		if (file_exists($sImageFilePath)) {
 			$aImageDimension = getimagesize($sImageFilePath);
