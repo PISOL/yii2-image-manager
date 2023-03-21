@@ -120,6 +120,10 @@ class ImageManagerInputWidget extends InputWidget {
                     'imageManager' => Yii::t('imagemanager','Image manager'),
                     'detachWarningMessage' => Yii::t('imagemanager', 'Are you sure you want to detach the image?'),
                 ]) . ";");
+        if ($this->hasModel()) {
+            $sFieldId = Html::getInputId($this->model, $this->attribute);
+            $view->registerJs("$('.field-".$sFieldId." .invalid-feedback').detach().appendTo('.field-".$sFieldId." .image-manager-input .input-group');");
+        }
     }
 
 }
