@@ -18,6 +18,7 @@ use yii\behaviors\BlameableBehavior;
  * @property string $modifiedBy
  */
 class ImageManager extends \yii\db\ActiveRecord { 
+	public $is_folder;
 
 	/**
 	 * Set Created date to now
@@ -85,7 +86,7 @@ class ImageManager extends \yii\db\ActiveRecord {
 	public function rules() {
 		return [
 			[['title'], 'required'],
-			[['enabled'], 'boolean'],
+			[['enabled', 'is_folder'], 'boolean'],
 			[['ts_created', 'modified'], 'safe'],
 			[['type'], 'string', 'max' => 50],
 			[['size_file'], 'string', 'max' => 200],

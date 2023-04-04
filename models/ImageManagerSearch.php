@@ -44,7 +44,7 @@ class ImageManagerSearch extends ImageManager
      */
     public function search($params)
     {
-        $query = ImageManager::find();
+        $query = ImageManager::find()->select(["*", "IF(type='FOLDER', 1, 0) as is_folder"]);
 
         // add conditions that should always apply here
 
@@ -53,9 +53,14 @@ class ImageManagerSearch extends ImageManager
 			'pagination' => [
 				'pagesize' => 100,
 			],
-			'sort'=> ['defaultOrder' => ['ts_created'=>SORT_DESC]]
+			'sort'=> ['defaultOrder' => ['is_folder' => SORT_DESC, 'ts_created'=>SORT_DESC]]
         ]);
 
+        $dataProvider->sort->attributes['is_folder'] = [
+            'asc'=>['is_folder'=>SORT_ASC],
+            'desc'=>['is_folder'=>SORT_DESC]
+        ];
+        
         $this->load($params);
 
         if (!$this->validate()) {

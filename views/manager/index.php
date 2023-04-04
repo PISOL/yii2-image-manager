@@ -37,7 +37,11 @@ $this->title = Yii::t('imagemanager','Image manager');
 			<?php Pjax::begin([
 				'id'=>'pjax-mediamanager',
 				'timeout'=>'5000'
-			]); ?>    
+			]);
+			if($searchModel->folder_name){
+				echo '<a href=""><i class="fa fa-level-up"></i> VOLVER</a>';
+			}
+			  ?>    
 			<?= ListView::widget([
 				'dataProvider' => $dataProvider,
 				'itemOptions' => ['class' => 'item img-thumbnail'],
