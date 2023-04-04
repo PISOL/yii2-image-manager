@@ -60,7 +60,7 @@ class ImageManagerSearch extends ImageManager
             'asc'=>['is_folder'=>SORT_ASC],
             'desc'=>['is_folder'=>SORT_DESC]
         ];
-        
+
         $this->load($params);
 
         if (!$this->validate()) {
@@ -82,7 +82,7 @@ class ImageManagerSearch extends ImageManager
             $query->andWhere(['<>', 'type', 'FOLDER']);
         }
 
-        $query->orFilterWhere(['like', 'title_upload', $this->globalSearch]);
+        $query->andFilterWhere(['like', 'title_upload', $this->globalSearch]);
 
         return $dataProvider;
     }

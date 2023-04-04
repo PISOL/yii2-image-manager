@@ -39,6 +39,7 @@ var imageManagerModule = {
 	selectFolder: function(folderName){
 		//set new url
 		var newUrl = window.queryStringParameter.set(window.location.href, "ImageManagerSearch[folder_name]", folderName);
+		newUrl = window.queryStringParameter.set(newUrl, "page", "1");
 		//set pjax
 		$.pjax({url: newUrl, container: "#pjax-mediamanager", push: false, replace: false, timeout: 5000, scrollTo:false});
 	},	
@@ -305,6 +306,9 @@ $(document).ready(function () {
 			//select image
 			imageManagerModule.selectImage(ImageManager_id);
 		}
+	});
+	$(document).on("click", "#lnk-level-up", function (){
+		imageManagerModule.selectFolder("")
 	});
 	//on click pick image
 	$(document).on("click", "#module-imagemanager .image-info .pick-image-item", function (){
