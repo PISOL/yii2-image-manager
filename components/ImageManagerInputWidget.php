@@ -80,7 +80,7 @@ class ImageManagerInputWidget extends InputWidget {
             $field .= Html::hiddenInput($this->name, $this->value, $this->options);
         }
         //end input group
-        $sHideClass = $ImageManager_id === null ? 'hide' : '';
+        $sHideClass = $ImageManager_id === null ? 'd-none' : '';
         $field .= "<div class='input-group-append'>";
         $field .= "<a href='#' class='input-group-addon btn btn-primary delete-selected-image " . $sHideClass . "' data-input-id='" . $sFieldId . "' data-show-delete-confirm='" . ($this->showDeletePickedImageConfirm ? "true" : "false") . "'><i class='far fa-trash-alt'></i></a>";
         $field .= "<a href='#' class='input-group-addon btn btn-primary open-modal-imagemanager' data-aspect-ratio='" . $this->aspectRatio . "' data-crop-view-mode='" . $this->cropViewMode . "' data-input-id='" . $sFieldId . "'>";
@@ -89,7 +89,7 @@ class ImageManagerInputWidget extends InputWidget {
 
         //show preview if is true
         if ($this->showPreview == true) {
-            $sHideClass = ($mImageManager == null) ? "hide" : "";
+            $sHideClass = ($mImageManager == null) ? "d-none" : "";
             $sImageSource = isset($mImageManager->id) ? \Yii::$app->imagemanager->getImagePath($mImageManager->id, 500, 500, 'inset') : "";
 
             $field .= '<div class="image-wrapper ' . $sHideClass . '">'
