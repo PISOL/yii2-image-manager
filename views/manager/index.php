@@ -39,7 +39,7 @@ $this->title = Yii::t('imagemanager','Image manager');
 				'timeout'=>'5000'
 			]);
 			if($searchModel->folder_name){
-				echo '<a href="#" id="lnk-level-up"><i class="fa fa-level-up"></i> VOLVER</a>';
+				echo '<button type="button" class="btn btn-link" id="lnk-level-up"><i class="fa fa-level-up"></i> VOLVER</button>';
 			}
 			  ?>    
 			<?= ListView::widget([
