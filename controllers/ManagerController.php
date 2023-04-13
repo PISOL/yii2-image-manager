@@ -161,7 +161,7 @@ class ManagerController extends Controller {
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 * @return mixed
 	 */
-	public function actionUpload($folderName = null) {
+	public function actionUpload() {
         //set response header
         Yii::$app->getResponse()->format = Response::FORMAT_JSON;
         // Check if the user is allowed to upload the image
@@ -192,6 +192,8 @@ class ManagerController extends Controller {
 				$iErrorCode = $_FILES['imagemanagerFiles']['error'][$key];
 				//if uploaded file has no error code  than continue;
 				if ($iErrorCode == 0) { 
+					$folderName = Yii::$app->request->post("folder_name");
+					
 					//create a file record
 					$model = new ImageManager();
 					$model->title_upload = str_replace(" ", "-", $sFileName);

@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\widgets\ListView;
 use yii\widgets\Pjax;
 use kartik\file\FileInput;
+use yii\web\JsExpression;
 
 $this->title = Yii::t('imagemanager','Image manager');
 
@@ -51,6 +52,9 @@ $this->title = Yii::t('imagemanager','Image manager');
 				},
 				'pager' => ['class' => yii\bootstrap4\LinkPager::class]
 			]) ?>
+			<script>
+				folderName = "<?php echo $searchModel->folder_name; ?>";
+			</script>
 			<?php Pjax::end(); ?>
 		</div>
 		<div class="col-xs-6 col-sm-2 col-options">
@@ -80,7 +84,10 @@ $this->title = Yii::t('imagemanager','Image manager');
 					'showCancel' => false,
 					'browseClass' => 'btn btn-primary btn-block',
 					'browseIcon' => '<i class="fa fa-upload"></i> ',
-					'browseLabel' => Yii::t('imagemanager','Upload')
+					'browseLabel' => Yii::t('imagemanager','Upload'),
+					'uploadExtraData' => new JsExpression('function (previewId, index) {
+						return { folder_name: folderName };
+					}'),
 				],
 				'pluginEvents' => [
 					"filebatchselected" => "function(event, files){  $('.msg-invalid-file-extension').addClass('d-none'); $(this).fileinput('upload'); }",
@@ -113,7 +120,7 @@ $this->title = Yii::t('imagemanager','Image manager');
 					<?php
 						if (Yii::$app->controller->module->canRemoveImage):
 					?>
-						<a href="#" class="btn btn-xs btn-danger delete-image-item" ><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> <?=Yii::t('imagemanager','Delete')?></a>
+						<a href="#" class="btn btn-xs btn-danger delete-image-item" ><i class="fas fa-trash"></i> <?=Yii::t('imagemanager','Delete')?></a>
 					<?php
 						endif;
 					?>
@@ -125,3 +132,8 @@ $this->title = Yii::t('imagemanager','Image manager');
 		</div>  
 	</div>
 </div>  
+<div id="loading" class="text-center position-absolute w-100 h-100" style="top:0;left:0;background-color: rgba(100, 100, 100, 0.3);z-index: 9999;display:none">
+  <div class="spinner-border" role="status" style="margin-top: 20%">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>

@@ -344,7 +344,12 @@ $(document).ready(function () {
 	$( document ).on("keyup change", "#input-mediamanager-search", function() {
 		imageManagerModule.filterImageResult($(this).val());
 	});
-	
+	$(document).on('pjax:send', function() {
+		$('#loading').show();
+	});
+	$(document).on('pjax:complete', function() {
+		$('#loading').hide();
+	});
 });
 
 /*

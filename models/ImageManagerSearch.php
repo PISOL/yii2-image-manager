@@ -80,6 +80,8 @@ class ImageManagerSearch extends ImageManager
         if($this->folder_name){
             $query->andWhere(['folder_name' => $this->folder_name]);
             $query->andWhere(['<>', 'type', 'FOLDER']);
+        }else{
+            $query->andWhere(['OR', 'folder_name IS NULL', ['type' => 'FOLDER']]);
         }
 
         $query->andFilterWhere(['like', 'title_upload', $this->globalSearch]);
