@@ -202,7 +202,11 @@ class ManagerController extends Controller {
 					//if file is saved add record
 					if ($model->save()) {
 						//save with Imagine class
-						Image::getImagine()->open($sTempFile)->save($sMediaPath . "/" . $model->title);
+						if($sFileExtension == "svg"){
+							copy($sTempFile, $sMediaPath . "/" . $model->title);
+						}else{
+							Image::getImagine()->open($sTempFile)->save($sMediaPath . "/" . $model->title);
+						}
 						
 						$model->setImageAttributes();
 						$model->save();
