@@ -135,7 +135,7 @@ class ManagerController extends Controller {
 		$model = new ImageManager();
 		$model->title_upload = $folderName;
 		$model->title = Yii::$app->getSecurity()->generateRandomString(16).".jpg";
-		$model->folder_name = $folderName;
+		$model->folder_name = (empty($folderName) ? null : $folderName);
 		//if file is saved add record
 		if ($model->save()) {
 			move_uploaded_file(dirname(__FILE__)."/../assets/source/img/img-folder.jpg", $sMediaPath."/".$model->title);
@@ -198,7 +198,7 @@ class ManagerController extends Controller {
 					$model = new ImageManager();
 					$model->title_upload = str_replace(" ", "-", $sFileName);
 					$model->title = Yii::$app->getSecurity()->generateRandomString(16).".".$sFileExtension;
-					$model->folder_name = $folderName;
+					$model->folder_name = (empty($folderName) ? null : $folderName);
 					//if file is saved add record
 					if ($model->save()) {
 						//save with Imagine class
