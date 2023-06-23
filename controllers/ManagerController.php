@@ -112,7 +112,9 @@ class ManagerController extends Controller {
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 * @return mixed
 	 */
-	public function actionCreateFolder($folderName) {
+	public function actionCreateFolder() {
+		$folderName = Yii::$app->request->post("folderName");
+
         //set response header
         Yii::$app->getResponse()->format = Response::FORMAT_JSON;
         // Check if the user is allowed to upload the image
@@ -138,8 +140,8 @@ class ManagerController extends Controller {
 		$model->folder_name = (empty($folderName) ? null : $folderName);
 		//if file is saved add record
 		if ($model->save()) {
-			move_uploaded_file(dirname(__FILE__)."/../assets/source/img/img-folder.jpg", $sMediaPath."/".$model->title);
-			$model->setImageAttributes();
+			copy(dirname(__FILE__)."/../assets/source/img/img-folder.jpg", $sMediaPath."/".$model->title);
+			$model->setFolderAttributes();
 			$bSuccess = $model->save();
 		}
 

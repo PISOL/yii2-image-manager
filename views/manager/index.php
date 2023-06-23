@@ -40,7 +40,7 @@ $this->title = Yii::t('imagemanager','Image manager');
 				'timeout'=>'5000'
 			]);
 			if($searchModel->folder_name){
-				echo '<button type="button" class="btn btn-link" id="lnk-level-up"><i class="fa fa-level-up"></i> VOLVER</button>';
+				echo '<button type="button" class="btn btn-link" id="lnk-level-up"><i class="fas fa-level-up-alt"></i> BACK</button>';
 			}
 			  ?>    
 			<?= ListView::widget([
@@ -129,6 +129,21 @@ $this->title = Yii::t('imagemanager','Image manager');
 				<a href="#" class="btn btn-primary btn-block pick-image-item"><?=Yii::t('imagemanager','Select')?></a> 
 				<?php endif; ?>
 			</div>
+
+			<?php if($viewMode === "page"): ?>
+			<a href="#" class="btn btn-primary btn-block btn-create-folder mt-4"><i class="fas fa-folder-plus"></i> <?=Yii::t('imagemanager','Create folder')?></a>
+			<div class="create-folder row d-none mt-4">
+				<div class="col-8 pr-1">
+					<?=Html::textInput('input-mediamanager-new_folder', null, ['id'=>'input-mediamanager-new_folder', 'class'=>'form-control', 'placeholder'=>Yii::t('imagemanager','Folder name').'...'])?>
+				</div>
+				<div class="col-2 px-1">
+					<a href="#" class="btn btn-success submit-create-folder btn-block px-1" ><i class="fas fa-check"></i></a>
+				</div>
+				<div class="col-2 pl-0">
+					<a href="#" class="btn btn-secondary cancel-create-folder btn-block px-1" ><i class="fas fa-times"></i></a>
+				</div>
+			</div> 
+			<?php endif; ?>
 		</div>  
 	</div>
 </div>  

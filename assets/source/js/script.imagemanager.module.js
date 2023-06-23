@@ -190,6 +190,36 @@ var imageManagerModule = {
 			}
 		});
 	},
+	viewCreateFolderForm: function(){
+		$(".btn-create-folder").addClass('d-none');
+		$(".create-folder").removeClass('d-none');
+	},
+	hideCreateFolderForm: function(){
+		$("#input-mediamanager-new_folder").val("");
+		$(".btn-create-folder").removeClass('d-none');
+		$(".create-folder").addClass('d-none');
+	},
+	createFolder: function(){
+		if($("#input-mediamanager-new_folder").val() != ""){
+			//call action by ajax
+			$.ajax({
+				url: imageManagerModule.baseUrl+"/create-folder",
+				type: "POST",
+				data: {
+					folderName: $("#input-mediamanager-new_folder").val() ,
+					_csrf: $('meta[name=csrf-token]').prop('content')
+				},
+				dataType: "json",
+				success: function (responseData, textStatus, jqXHR) {
+					$.pjax.reload('#pjax-mediamanager', {push: false, replace: false, timeout: 5000, scrollTo: false});
+					imageManagerModule.hideCreateFolderForm();
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					alert("Error: can't create folder");
+				}
+			});
+		}
+	},
 	//upload file
 	uploadSuccess: function(uploadResponse){
 		//close editor
@@ -343,6 +373,15 @@ $(document).ready(function () {
 	//on keyup change set filter
 	$( document ).on("keyup change", "#input-mediamanager-search", function() {
 		imageManagerModule.filterImageResult($(this).val());
+	});
+	$(document).on("click", ".btn-create-folder", function(){
+		imageManagerModule.viewCreateFolderForm();
+	});
+	$(document).on("click", ".cancel-create-folder", function(){
+		imageManagerModule.hideCreateFolderForm();
+	});
+	$(document).on("click", ".submit-create-folder", function(){
+		imageManagerModule.createFolder();
 	});
 	$(document).on('pjax:send', function() {
 		$('#loading').show();
