@@ -37,8 +37,12 @@ var imageManagerModule = {
 	},	
 	//select a folder
 	selectFolder: function(folderName){
+		$("#module-imagemanager .image-info").addClass("d-none");
+		//set selectedImage to null
+		imageManagerModule.selectedImage = null;
+
 		//set new url
-		var newUrl = window.queryStringParameter.set(window.location.href, "ImageManagerSearch[folder_name]", folderName);
+		var newUrl = window.queryStringParameter.set(window.location.href.replace("#", ""), "ImageManagerSearch[folder_name]", folderName);
 		newUrl = window.queryStringParameter.set(newUrl, "page", "1");
 		//set pjax
 		$.pjax({url: newUrl, container: "#pjax-mediamanager", push: false, replace: false, timeout: 5000, scrollTo:false});
@@ -178,6 +182,8 @@ var imageManagerModule = {
 					$("#module-imagemanager .image-info .fileName").text(responseData.fileName).attr("title",responseData.fileName);
 					$("#module-imagemanager .image-info .created").text(responseData.created);
 					$("#module-imagemanager .image-info .fileSize").text(responseData.fileSize);
+					$("#module-imagemanager .image-info .url").text(responseData.url);
+					$("#module-imagemanager .image-info .url").attr("href", responseData.url);
 					$("#module-imagemanager .image-info .dimensions .dimension-width").text(responseData.dimensionWidth);
 					$("#module-imagemanager .image-info .dimensions .dimension-height").text(responseData.dimensionHeight);
 					$("#module-imagemanager .image-info .thumbnail").html("<img src='"+responseData.image+"' alt='"+responseData.fileName+"'/>");

@@ -407,6 +407,7 @@ class ManagerController extends Controller {
 		$return['fileSize'] = $model->imageDetails['size'];
 		$return['dimensionWidth'] = $model->imageDetails['width'];
 		$return['dimensionHeight'] = $model->imageDetails['height'];
+		$return['url'] = $model->url_path_cache;
 		$return['image'] = \Yii::$app->imagemanager->getImagePath($model->id, 400, 400, "inset");
 		//add extra URL argument to prevent browser caching
 		$return['image'] .= (strpos($return['image'], '?') === false ? '?' : '&' ) . "t=" . time();

@@ -114,6 +114,7 @@ $this->title = Yii::t('imagemanager','Image manager');
 				</div>
 				<div class="details">
 					<div class="fileName"></div>
+					<a class="url" target="_blank"></a>
 					<div class="created"></div>
 					<div class="fileSize"></div>
 					<div class="dimensions"><span class="dimension-width"></span> &times; <span class="dimension-height"></span></div>
