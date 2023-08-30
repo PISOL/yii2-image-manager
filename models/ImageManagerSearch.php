@@ -72,7 +72,7 @@ class ImageManagerSearch extends ImageManager
         // Get the module instance
         $module = Module::getInstance();
 
-        $query->andWhere(['NOT IN', 'type', ['xls', 'xlsx']]);
+        $query->andWhere(['NOT IN', 'type', ['xls', 'xlsx', 'doc', 'docx', 'pdf']]);
 
         if ($module->setBlameableBehavior) {
             $query->andWhere(['user_id' => Yii::$app->user->id]);
