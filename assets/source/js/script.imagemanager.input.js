@@ -30,7 +30,7 @@ var imageManagerInput = {
 		}
 	},
 	//open media manager modal
-	openModal: function(inputId, aspectRatio, cropViewMode){
+	openModal: function(inputId, aspectRatio, cropViewMode, restrictFolder){
 		//get selected item
 		var iImageId = $("#"+inputId).val();
 		var srcImageIdQueryString = "";
@@ -39,7 +39,7 @@ var imageManagerInput = {
 		}
 		//create iframe url
 		var queryStringStartCharacter = ((imageManagerInput.baseUrl).indexOf('?') == -1) ? '?' : '&';
-		var imageManagerUrl = imageManagerInput.baseUrl+queryStringStartCharacter+"view-mode=iframe&input-id="+inputId+"&aspect-ratio="+aspectRatio+"&crop-view-mode="+cropViewMode+srcImageIdQueryString;
+		var imageManagerUrl = imageManagerInput.baseUrl+queryStringStartCharacter+"view-mode=iframe&input-id="+inputId+"&aspect-ratio="+aspectRatio+"&restrict-folder="+restrictFolder+"&crop-view-mode="+cropViewMode+srcImageIdQueryString;
 		//set iframe path
 		$("#modal-imagemanager iframe").attr("src",imageManagerUrl);
         $("#modal-imagemanager .modal-dialog .modal-header h5").text(imageManagerInput.message.imageManager);
@@ -82,8 +82,9 @@ $(document).ready(function () {
 		var aspectRatio = $(this).data("aspect-ratio");
 		var cropViewMode = $(this).data("crop-view-mode");
 		var inputId = $(this).data("input-id");
+		var restrictFolder = $(this).data("restrict-folder");
 		//open selector id
-		imageManagerInput.openModal(inputId, aspectRatio, cropViewMode);
+		imageManagerInput.openModal(inputId, aspectRatio, cropViewMode, restrictFolder);
 	});
 
 	//delete picked image

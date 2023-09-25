@@ -33,6 +33,12 @@ class ImageManagerInputWidget extends InputWidget {
     public $showDeletePickedImageConfirm = false;
 
     /**
+     * @var null|string Restrict manager navigation to the defined folder.
+     */
+    public $restrictFolder = null;
+
+
+    /**
      * @inheritdoc
      */
     public function init() {
@@ -83,7 +89,7 @@ class ImageManagerInputWidget extends InputWidget {
         $sHideClass = $ImageManager_id === null ? 'd-none' : '';
         $field .= "<div class='input-group-append'>";
         $field .= "<a href='#' class='input-group-addon btn btn-primary delete-selected-image " . $sHideClass . "' data-input-id='" . $sFieldId . "' data-show-delete-confirm='" . ($this->showDeletePickedImageConfirm ? "true" : "false") . "'><i class='far fa-trash-alt'></i></a>";
-        $field .= "<a href='#' class='input-group-addon btn btn-primary open-modal-imagemanager' data-aspect-ratio='" . $this->aspectRatio . "' data-crop-view-mode='" . $this->cropViewMode . "' data-input-id='" . $sFieldId . "'>";
+        $field .= "<a href='#' class='input-group-addon btn btn-primary open-modal-imagemanager' data-aspect-ratio='" . $this->aspectRatio . "' data-crop-view-mode='" . $this->cropViewMode . "' data-restrict-folder='" . $this->restrictFolder . "' data-input-id='" . $sFieldId . "'>";
         $field .= "<i class='far fa-folder-open'></i>";
         $field .= "</a></div></div>";
 
@@ -115,6 +121,7 @@ class ImageManagerInputWidget extends InputWidget {
         //set baseUrl from image manager
         $sBaseUrl = Url::to(['/imagemanager/manager']);
         //set base url
+        if($this->restrictFolder) $view->registerJs("imageManagerInput.folderName = '" . $this->restrictFolder . "';");
         $view->registerJs("imageManagerInput.baseUrl = '" . $sBaseUrl . "';");
         $view->registerJs("imageManagerInput.message = " . Json::encode([
                     'imageManager' => Yii::t('imagemanager','Image manager'),

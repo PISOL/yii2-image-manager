@@ -5,6 +5,7 @@ var imageManagerModule = {
 	cropViewMode: 1,
 	defaultImageId: null,
 	selectType: null, 
+	restrictFolder: null,
 	//current selected image
 	selectedImage: null,
 	//language
@@ -36,16 +37,22 @@ var imageManagerModule = {
 		$.pjax({url: newUrl, container: "#pjax-mediamanager", push: false, replace: false, timeout: 5000, scrollTo:false});
 	},	
 	//select a folder
-	selectFolder: function(folderName){
+	selectFolder: function(fName){
+		folderName = fName;
+
+		if(fName == ""){
+			$(".btn-create-folder").removeClass('d-none');
+		}else{
+			$(".btn-create-folder").addClass('d-none');
+		}
+
+		//set pjax
+		$.pjax.reload('#pjax-mediamanager', {push: false, replace: false, timeout: 5000, scrollTo: false});
+		//$.pjax({url: newUrl, container: "#pjax-mediamanager", push: false, replace: false, timeout: 5000, scrollTo:false});
+		
 		$("#module-imagemanager .image-info").addClass("d-none");
 		//set selectedImage to null
 		imageManagerModule.selectedImage = null;
-
-		//set new url
-		var newUrl = window.queryStringParameter.set(window.location.href.replace("#", ""), "ImageManagerSearch[folder_name]", folderName);
-		newUrl = window.queryStringParameter.set(newUrl, "page", "1");
-		//set pjax
-		$.pjax({url: newUrl, container: "#pjax-mediamanager", push: false, replace: false, timeout: 5000, scrollTo:false});
 	},	
 	//select an image
 	selectImage: function(id){
@@ -388,6 +395,13 @@ $(document).ready(function () {
 	});
 	$(document).on("click", ".submit-create-folder", function(){
 		imageManagerModule.createFolder();
+	});
+	$(document).on('pjax:beforeSend', function(event, xhr, options) {
+		if(imageManagerModule.restrictFolder) folderName = imageManagerModule.restrictFolder;
+		if(folderName){
+			//set new url
+			options.url = window.queryStringParameter.set(options.url.replace("#", ""), "ImageManagerSearch[folder_name]", folderName);
+		}
 	});
 	$(document).on('pjax:send', function() {
 		$('#loading').show();

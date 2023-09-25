@@ -62,6 +62,7 @@ class ManagerController extends Controller {
 		$selectType = Yii::$app->request->get("select-type", "input");
 		$inputFieldId = Yii::$app->request->get("input-id");
 		$cropAspectRatio = Yii::$app->request->get("aspect-ratio");
+		$restrictFolder = Yii::$app->request->get("restrict-folder");
 		$cropViewMode = Yii::$app->request->get("crop-view-mode", 1);
 		$defaultImageId = Yii::$app->request->get("image-id");
 
@@ -88,6 +89,7 @@ class ManagerController extends Controller {
 		$this->view->registerJs("imageManagerModule.defaultImageId = '" . $defaultImageId . "';", 3);
 		$this->view->registerJs("imageManagerModule.fieldId = '" . $inputFieldId . "';", 3);
 		$this->view->registerJs("imageManagerModule.cropRatio = '" . $cropAspectRatio . "';", 3);
+		$this->view->registerJs("imageManagerModule.restrictFolder = '" . $restrictFolder . "';", 3);
 		$this->view->registerJs("imageManagerModule.cropViewMode = '" . $cropViewMode . "';", 3);
 		$this->view->registerJs("imageManagerModule.selectType = '" . $selectType . "';", 3);
 		$this->view->registerJs("imageManagerModule.message = " . Json::encode([
@@ -95,11 +97,13 @@ class ManagerController extends Controller {
 				]) . ";", 3);
 
 		$searchModel = new ImageManagerSearch();
+		if(!empty($restrictFolder)) $searchModel->folder_name = $restrictFolder;
 		$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 		
 		//render template
 		return $this->render(
 						'index', [
+						'restrictFolder' => $restrictFolder,
 					'searchModel' => $searchModel,
 					'dataProvider' => $dataProvider,
 					'viewMode' => $viewMode,

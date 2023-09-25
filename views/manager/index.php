@@ -39,7 +39,7 @@ $this->title = Yii::t('imagemanager','Image manager');
 				'id'=>'pjax-mediamanager',
 				'timeout'=>'5000'
 			]);
-			if($searchModel->folder_name){
+			if($searchModel->folder_name && empty($restrictFolder)){
 				echo '<button type="button" class="btn btn-link" id="lnk-level-up"><i class="fas fa-level-up-alt"></i> BACK</button>';
 			}
 			  ?>    
