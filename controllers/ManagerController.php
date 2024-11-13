@@ -19,6 +19,7 @@ use Imagine\Image\Box;
 use Imagine\Image\Palette\RGB;
 use Imagine\Image\Point;
 use pisol\imagemanager\Module;
+use yii\filters\AccessControl;
 
 /**
  * Manager controller for the `imagemanager` module
@@ -31,6 +32,19 @@ class ManagerController extends Controller {
 	 */
 	public function behaviors() {
 		return [
+			'access' => [
+                'class' => AccessControl::class,
+                'rules' => [
+                    [
+                        'allow' => false,
+                        'roles' => ['?'],
+                    ],
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
 			'verbs' => [
 				'class' => VerbFilter::className(),
 				'actions' => [
